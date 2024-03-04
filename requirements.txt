@@ -1,0 +1,4 @@
+Flask==3.0.0
+Flask-Cors==4.0.0
+flask-sock==0.7.0
+hivemind==1.1.10.post2
