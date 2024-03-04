@@ -1,11 +1,7 @@
-import hivemind
 from flask import Flask, render_template
 from flask_cors import CORS
 from flask_sock import Sock
 
-logger = hivemind.get_logger(__file__)
-
-logger.info("Starting Flask app")
 app = Flask(__name__, template_folder="static")
 CORS(app)
 app.config["SOCK_SERVER_OPTIONS"] = {"ping_interval": 25}
