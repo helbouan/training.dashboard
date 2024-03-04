@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" class="js-site-favicon" type="image/png" href="./static/hive.png">
+    <title>HiveX &ndash; Hive Distributed Training PoC</title>
+    <link href="./static/bootstrap.min.css" rel="stylesheet">
+    <link href="./static/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <!-- <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const hiveForm = document.getElementById("hivediskForm");
+        const loadingIndicator2 = document.getElementById("loading-indicator2");
+        const resultMessage2 = document.getElementById("result-message2");
+
+        hiveForm.addEventListener("submit", function (event) {
+          event.preventDefault();
+          const formData = new FormData(hiveForm);
+          resultMessage2.style.display = "none";
+
+          loadingIndicator2.style.display = "block";
+          loadingIndicator2.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+
+          fetch("/api/v1/gethivedisk", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.text())
+            .then((responseText) => {
+              loadingIndicator2.style.display = "none";
+
+              if (responseText.trim() === "OK") {
+                resultMessage2.style.color = "green";
+              } else {
+                resultMessage2.style.color = "red";
+              }
+
+              resultMessage2.textContent = responseText;
+              resultMessage2.style.display = "block";
+            })
+            .catch((error) => {
+              console.error("Error updating from HiveDisk:", error);
+              loadingIndicator2.style.display = "none";
+              resultMessage2.style.display = "none";
+            });
+        });
+      });
+    </script> -->
+  </head>
+  <body class="dark-mode">
+
+    <main>
+      <div class="position-relative overflow-hidden px-5 pt-1 m-md-4 text-center">
+        <div class="col-lg-6 col-md-8 p-md-3 mx-auto my-3" style="max-width: 700px;">
+          <div class="mb-4">
+            <div class="d-md-inline-block pe-md-4" >
+              <a target="_blank" href="https://hivenet.com" ><img src="./static/hive.png" height="80" ></a>
+            </div>
+            <h1 class="display-4 fw-bold d-md-inline-block white-color justify-content-center" style="font-size: 40pt; vertical-align: middle;">
+              hive
+              <span style="font-size: 25pt; color: #e1ff01;">Training</span>
+              <!-- <span style="font-size: 12pt; color: #c9d0d7df;">(for DELL)</span> -->
+            </h1>
+          </div>
+          <div class="welcome mb-4">
+            <div>
+              <b>Welcome!</b> This is a demo interface for hiveCompute distributed training engine over a private cluster.
+            </div>
+            <br>
+
+            <div class="tab-container">
+                <div class="tab-buttons"></div>
+                    <button class="tab-button" onclick="openTab('nodes')" data-tab="nodes">Nodes</button>
+                    <button class="tab-button" onclick="openTab('dataset')" data-tab="dataset">Dataset</button>
+                    <button class="tab-button" onclick="openTab('model')" data-tab="model">Model</button>
+                    <button class="tab-button" onclick="openTab('config')" data-tab="config">Config</button>
+                </div>
+
+                <div id="default" class="tab-content">
+                    <p></p>
+                </div>
+
+                <div id="nodes" class="tab-content">
+                    <form id="nodeForm">
+                        <ul>
+                            {% for node in data.nodes %}
+                                <li>
+                                    <input type="checkbox" name="selectedNodes" value="{{ node }}"> {{ node.ip_address }} ({{ node.gpu_memory }} GB)
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <!-- <button type="button" onclick="submitSelection()">Submit Selection</button> -->
+                    </form>
+                    <p>Required GPU memory: {{ data.required }} GB</p>
+                    <p>Total GPU memory: <span id="totalMemory">0</span> GB</p>
+                </div>
+        
+                <div id="dataset" class="tab-content">
+                    <form id="datasetForm">
+                        <label for="hftoken">HF Token:</label>
+                        <input type="text" id="hftoken" name="hftoken" required>
+                        <br>
+                        <label for="hfdataset">Dataset: &nbsp;&nbsp;</label>
+                        <input type="text" id="hfdataset" name="hfdataset" required>
+                        <br>
+                        <label for="trimdataset">Trim (%):&nbsp;</label>
+                        <input type="number" min=0 max=100 id="trimdataset" name="trimdataset" required>
+                
+                        <!-- <button type="button" onclick="submitTokenForm()">Submit Token</button> -->
+                    </form>
+                </div>
+                
+        
+                <div id="model" class="tab-content">
+                    <form id="inmodelForm">
+                        <label for="task">Task</label>
+                        <select id="task" name="task">
+                            <option value="feature-extraction">Feature extraction</option>
+                            <option value="question-answering">Question answering</option>
+                            <option value="sentence-similarity">Sentence similarity</option>
+                            <option value="summarization">Summarization</option>
+                            <option value="text-classification">Text classification</option>
+                            <option value="text-generation">Text generation</option>
+                            <option value="translation">Translation</option>
+                            <option value="automatic">Automatic</option>
+                        </select>
+                        <br>
+                        Input:
+                        <br>
+                        <label for="hftoken">HF Token:</label>
+                        <input type="text" id="hftoken" name="hftoken" required>
+                        <br>
+                        <label for="hfinmodel">Model: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input type="text" id="hfinmodel" name="hfinmodel" required>
+                        <br>
+                        Output:
+                        <br>
+                        <label for="hftoken">HF Token:</label>
+                        <input type="text" id="hftoken" name="hftoken" required>
+                        <br>
+                        <label for="hfinmodel">Model: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <input type="text" id="hfinmodel" name="hfinmodel" required>
+                        <br>
+                        <!-- <button type="button" onclick="submitTokenForm()">Submit Token</button> -->
+                    </form>
+                </div>
+
+                <div id="config" class="tab-content">
+                    <form id="configForm">
+                        <label for="configChoice">Fine tuning mode: </label>
+                        <select id="configChoice" name="configChoice">
+                            <option value="fullfinetuning">Full fine tuning</option>
+                            <option value="peftlora">PEFT (LoRA)</option>
+                            <option value="peftqlora">PEFT (QLoRA)</option>
+                        </select>
+                        <!-- <button type="button" onclick="submitNewTabForm()">Submit Choice</button> -->
+                    </form>
+                </div>
+
+                <button class="train-button" onclick="submitAllForms()">Train</button>
+            </div>
+
+            <script src="./static/script.js"></script>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
